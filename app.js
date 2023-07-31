@@ -1,12 +1,36 @@
+const { log } = require("console");
 const fs = require("fs");
+// const jsonConverter = require('./json-converter')
+// const csvConverter = require('./csv-converter');
+// const transformFromJsonToCsv = require("./csv-converter");
 
 const inputUrl = process.argv[2];
+const splittedInputUrl = inputUrl.split('.')
+const ext = splittedInputUrl[splittedInputUrl.length - 1]
+
+let transformFunction;
+if (ext.toLowerCase.includes('json')) {
+
+    transformFunction= require('./json-converter')
+
+} else if (ext.toLowerCase.includes('csv')){
+
+    transformFunction= require('./csv-converter')
+
+} else {
+    console.log('non posso convertire i file:' + ext);
+    process.exit()
+}
+
 const outputUrl = process.argv[3];
+
+
+let divider = process.argv[4]
 
 let data = readFile(inputUrl)
 
 if (data){
-    const result = transFormData(data)
+    const result = transformFromJsonToCsv(data,divider)
     writeData(outputUrl,result)
 }
 
@@ -40,25 +64,3 @@ function writeData(url, data){
         }        
 }
 
-
-function transFormData(data){
-
-    const rows = data.split('/\r?\n/');
-
-    //1) creare una costante 'header' con la prima riga che AVRETE TOLTO a rows,
-    //2) creare una costante 'headerArray' splittano la stinga header sulle virgole
-    //3) creare un array chiammato stidentd
-    //4) ciclate sull'array rows
-        //4a) creare una costante rowArray splittando la singola row sulle virgole
-        //4b) creare un oggetto vuoto chiamato student
-        //4c) ciclare sull'headerArraya
-            //4c1) per ogni elemento di headerArray aggiungo una proprietà all'oggetto student
-                // student[headerArray[j]] = rowArray[j]
-            //4d) aggiungo student a students
-    //5) ritorno JSON.stringify di students
-
-    //A1) tipipzzare i valori del json
-    //A2)aggiungere un parametro alla app che mi permette di indicare il carattere divisorio
-    //A3) gestire la possibiltà che nel csv ci siano degli spaaiì
-    return JSON.stringify(rows)
-}
